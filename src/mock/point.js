@@ -56,8 +56,8 @@ const generatePoint = (id = 0) => {
 
   return {
     basePrice: getRandomInt(200, 2000),
-    dateFrom: '2022-05-04T15:15:00.000Z',
-    dateTo: '2022-05-04T16:20:00.000Z',
+    dateFrom: '2022-05-04T05:20:00.000Z',
+    dateTo: '2022-05-05T17:10:00.000Z',
     destination: generateDestination(),
     id: id,
     isFavorite: getRandomInt(0, 1) === 0 ? 'false' : 'true',
