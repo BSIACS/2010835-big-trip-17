@@ -18,10 +18,10 @@ export default class TripEventsPresenter{
   init = () => {
     render(new SortView(), this.container, RenderPosition.BEFOREEND);
     render(this.tripEventsListComponent, this.container, RenderPosition.BEFOREEND);
-    render(new EditPointView(this.points[0], this.availableOffers, false), this.tripEventsListComponent.getElement(), RenderPosition.BEFOREEND);
+    render(new EditPointView(this.points[0], this.availableOffers, false), this.tripEventsListComponent.element, RenderPosition.BEFOREEND);
 
     for (let i = 1; i < 20; i++) {
-      render(new PointView(this.points[i], this.availableOffers), this.tripEventsListComponent.getElement(), RenderPosition.BEFOREEND);
+      render(new PointView(this.points[i], this.availableOffers), this.tripEventsListComponent.element, RenderPosition.BEFOREEND);
     }
   };
 }

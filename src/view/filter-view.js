@@ -21,19 +21,21 @@ const filterTemplate = () => `
 </form>`;
 
 export default class FilterView{
-  getTemplate(){
+  #element = null;
+
+  get template(){
     return filterTemplate();
   }
 
-  getElement(){
-    if(this.element){
-      return this.element;
+  get element(){
+    if(this.#element){
+      return this.#element;
     }
 
-    return (this.element = createElement(this.getTemplate()));
+    return (this.#element = createElement(this.template));
   }
 
   removeElement(){
-    this.element = null;
+    this.#element = null;
   }
 }

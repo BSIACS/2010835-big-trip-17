@@ -148,6 +148,7 @@ const editPointTemplate = (point, availableOffers, isAddView) => {
 };
 
 export default class PointView{
+  #element = null;
 
   constructor(point, offers, isAddView = false){
     this.point = point;
@@ -155,19 +156,19 @@ export default class PointView{
     this.isAddView = isAddView;
   }
 
-  getTemplate(){
+  get template(){
     return editPointTemplate(this.point, this.offers, this.isAddView);
   }
 
-  getElement(){
-    if(this.element){
-      return this.element;
+  get element(){
+    if(this.#element){
+      return this.#element;
     }
 
-    return (this.element = createElement(this.getTemplate()));
+    return (this.#element = createElement(this.template));
   }
 
   removeElement(){
-    this.element = null;
+    this.#element = null;
   }
 }

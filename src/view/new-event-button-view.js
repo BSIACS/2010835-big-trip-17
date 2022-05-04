@@ -3,19 +3,21 @@ import {createElement} from '../render.js';
 const newEventButtonTemplate = () => '<button class="trip-main__event-add-btn  btn  btn--big  btn--yellow" type="button">New event</button>';
 
 export default class NewEventButtonView{
-  getTemplate(){
+  #element = null;
+
+  get template(){
     return newEventButtonTemplate();
   }
 
-  getElement(){
-    if(this.element){
-      return this.element;
+  get element(){
+    if(this.#element){
+      return this.#element;
     }
 
-    return (this.element = createElement(this.getTemplate()));
+    return (this.#element = createElement(this.template));
   }
 
   removeElement(){
-    this.element = null;
+    this.#element = null;
   }
 }
