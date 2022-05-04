@@ -44,4 +44,6 @@ const getTimeDuration = (dateFrom, dateTo) => {
   return `${days}${hours}${minutes}`;
 };
 
-export {getRandomArrayElement, getRandomInt, humanizeDateFormat,  getTimeDuration, getRandomUniqueIntegersArray};
+const isEscapeKey = (evt) => evt.key === 'Escape' || evt.key === 'Esc';
+
+export {getRandomArrayElement, getRandomInt, humanizeDateFormat,  getTimeDuration, getRandomUniqueIntegersArray, isEscapeKey};
