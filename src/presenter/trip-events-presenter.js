@@ -4,6 +4,7 @@ import TripEventsListView from '../view/trip-events-list-view.js';
 import EditPointView from '../view/edit-point-view.js';
 import PointView from '../view/point-view.js';
 import { isEscapeKey } from '../utils.js';
+import MessageView from '../view/message-view.js';
 
 
 export default class TripEventsPresenter{
@@ -18,11 +19,17 @@ export default class TripEventsPresenter{
 
   init = () => {
     render(new SortView(), this.container, RenderPosition.BEFOREEND);
-    render(this.tripEventsListComponent, this.container, RenderPosition.BEFOREEND);
 
-    for (let i = 1; i < 20; i++) {
-      this.#renderPoint(this.points[i], this.tripEventsListComponent.element);
+    if(this.points.length === 0){
+      render(new MessageView(), this.container, RenderPosition.BEFOREEND);
     }
+    else{
+      render(this.tripEventsListComponent, this.container, RenderPosition.BEFOREEND);
+      for (let i = 1; i < this.points.length; i++) {
+        this.#renderPoint(this.points[i], this.tripEventsListComponent.element);
+      }
+    }
+
   };
 
   #renderPoint = (point, container) => {
