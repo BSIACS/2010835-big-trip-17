@@ -12,7 +12,7 @@ const getEventTypeItemTemplate = (eventType, checkedType) => {
 
   return `
     <div class="event__type-item">
-      <input id="event-type-${eventType}-1" class="event__type-input  visually-hidden" type="radio" name="event-type" value=${eventType} ${isChecked}>
+      <input id="event-type-${eventType}-1" class="event__type-input  visually-hidden" type="radio" name="event-type" value="${eventType}" ${isChecked}>
       <label class="event__type-label  event__type-label--${eventType}" for="event-type-${eventType}-1">${textContent}</label>
     </div>`;
 };

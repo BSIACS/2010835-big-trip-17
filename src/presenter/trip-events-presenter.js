@@ -29,20 +29,26 @@ export default class TripEventsPresenter{
     const pointComponent = new PointView(point, this.availableOffers);
     const editPointComponent = new EditPointView(point, this.availableOffers, false);
 
-    const onRollupButtonClick = () => {
+    const switchToEditPointView = () => {
       container.replaceChild(pointComponent.element, editPointComponent.element);
       editPointComponent.element.querySelector('.event__rollup-btn').removeEventListener('click', onRollupButtonClick);
       document.removeEventListener('keydown', onEscapeKeydown);
       editPointComponent.element.querySelector('.event--edit').removeEventListener('submit', onFormSubmit);
     };
 
+    function onRollupButtonClick(){
+      switchToEditPointView();
+    }
+
     function onEscapeKeydown(evt){
       if(isEscapeKey(evt)){
-        container.replaceChild(pointComponent.element, editPointComponent.element);
-        editPointComponent.element.querySelector('.event__rollup-btn').removeEventListener('click', onRollupButtonClick);
-        document.removeEventListener('keydown', onEscapeKeydown);
-        editPointComponent.element.querySelector('.event--edit').removeEventListener('submit', onFormSubmit);
+        switchToEditPointView();
       }
+    }
+
+    function onFormSubmit(evt){
+      evt.preventDefault();
+      switchToEditPointView();
     }
 
     const onRolldownButtonClick = () => {
@@ -51,14 +57,6 @@ export default class TripEventsPresenter{
       editPointComponent.element.querySelector('.event--edit').addEventListener('submit', onFormSubmit);
       container.replaceChild(editPointComponent.element, pointComponent.element);
     };
-
-    function onFormSubmit(evt){
-      evt.preventDefault();
-      container.replaceChild(pointComponent.element, editPointComponent.element);
-      editPointComponent.element.querySelector('.event__rollup-btn').removeEventListener('click', onRollupButtonClick);
-      document.removeEventListener('keydown', onEscapeKeydown);
-      editPointComponent.element.querySelector('.event--edit').removeEventListener('submit', onFormSubmit);
-    }
 
     pointComponent.element.querySelector('.event__rollup-btn').addEventListener('click', onRolldownButtonClick);
 
