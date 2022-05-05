@@ -3,19 +3,21 @@ import {createElement} from '../render.js';
 const tripEventsListTemplate = () => '<ul class="trip-events__list"></ul>';
 
 export default class TripEventsListView{
-  getTemplate(){
+  #element = null;
+
+  get template(){
     return tripEventsListTemplate();
   }
 
-  getElement(){
-    if(this.element){
-      return this.element;
+  get element(){
+    if(this.#element){
+      return this.#element;
     }
 
-    return (this.element = createElement(this.getTemplate()));
+    return (this.#element = createElement(this.template));
   }
 
   removeElement(){
-    this.element = null;
+    this.#element = null;
   }
 }
