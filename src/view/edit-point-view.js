@@ -5,11 +5,15 @@ const EVENT_TIME_FORMAT = 'YY/MM/DD HH:mm';
 
 const getEventTypeItemTemplate = (eventType, checkedType) => {
   const isChecked = eventType === checkedType ? 'checked' : '';
+  eventType = eventType.split('');
+  eventType[0] = eventType[0].toUpperCase();
+  let textContent = eventType;
+  textContent = textContent.join('');
 
   return `
     <div class="event__type-item">
       <input id="event-type-${eventType}-1" class="event__type-input  visually-hidden" type="radio" name="event-type" value=${eventType} ${isChecked}>
-      <label class="event__type-label  event__type-label--${eventType}" for="event-type-${eventType}-1">${eventType}</label>
+      <label class="event__type-label  event__type-label--${eventType}" for="event-type-${eventType}-1">${textContent}</label>
     </div>`;
 };
 
