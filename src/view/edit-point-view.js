@@ -1,4 +1,4 @@
-import {createElement} from '../render.js';
+import AbstractView from '../framework/view/abstract-view.js';
 import { humanizeDateFormat } from '../utils.js';
 
 const EVENT_TIME_FORMAT = 'YY/MM/DD HH:mm';
@@ -154,10 +154,10 @@ const editPointTemplate = (point, availableOffers, isAddView) => {
     </li>`;
 };
 
-export default class PointView{
-  #element = null;
+export default class PointView extends AbstractView{
 
   constructor(point, offers, isAddView = false){
+    super();
     this.point = point;
     this.offers = offers;
     this.isAddView = isAddView;
@@ -167,15 +167,35 @@ export default class PointView{
     return editPointTemplate(this.point, this.offers, this.isAddView);
   }
 
-  get element(){
-    if(this.#element){
-      return this.#element;
+  setRollupButtonClickHandler(callback){
+    this._callback.rollupButtonClick = callback;
+    this.element.querySelector('.event__rollup-btn').addEventListener('click', this.#rollupButtonClickHandler);
+  }
+
+  setFormSubmitHandler(callback){
+    this._callback.formSubmit = callback;
+    this.element.querySelector('.event--edit').addEventListener('submit', this.#formSubmitHandler);
+  }
+
+  unsetRollupButtonClickHandler(){
+    if(this._callback.rollupButtonClick){
+      this.element.querySelector('.event__rollup-btn').removeEventListener('click', this.#rollupButtonClickHandler);
     }
-
-    return (this.#element = createElement(this.template));
   }
 
-  removeElement(){
-    this.#element = null;
+  unsetFormSubmitHandler(){
+    if(this._callback.formSubmit){
+      this.element.querySelector('.event--edit').removeEventListener('submit', this.#formSubmitHandler);
+    }
   }
+
+  #rollupButtonClickHandler = (evt) => {
+    evt.preventDefault();
+    this._callback.rollupButtonClick();
+  };
+
+  #formSubmitHandler = (evt) => {
+    evt.preventDefault();
+    this._callback.formSubmit();
+  };
 }
