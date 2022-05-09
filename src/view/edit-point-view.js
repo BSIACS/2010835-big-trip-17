@@ -167,19 +167,35 @@ export default class PointView extends AbstractView{
     return editPointTemplate(this.point, this.offers, this.isAddView);
   }
 
-  setRollupButtonClickHandler(handler){
-    this.element.querySelector('.event__rollup-btn').addEventListener('click', handler);
+  setRollupButtonClickHandler(callback){
+    this._callback.rollupButtonClick = callback;
+    this.element.querySelector('.event__rollup-btn').addEventListener('click', this.#rollupButtonClickHandler);
   }
 
-  setFormSubmitHandler(handler){
-    this.element.querySelector('.event--edit').addEventListener('submit', handler);
+  setFormSubmitHandler(callback){
+    this._callback.formSubmit = callback;
+    this.element.querySelector('.event--edit').addEventListener('submit', this.#formSubmitHandler);
   }
 
-  unsetRollupButtonClickHandler(handler){
-    this.element.querySelector('.event__rollup-btn').removeEventListener('click', handler);
+  unsetRollupButtonClickHandler(){
+    if(this._callback.rollupButtonClick){
+      this.element.querySelector('.event__rollup-btn').removeEventListener('click', this.#rollupButtonClickHandler);
+    }
   }
 
-  unsetFormSubmitHandler(handler){
-    this.element.querySelector('.event--edit').removeEventListener('submit', handler);
+  unsetFormSubmitHandler(){
+    if(this._callback.formSubmit){
+      this.element.querySelector('.event--edit').removeEventListener('submit', this.#formSubmitHandler);
+    }
   }
+
+  #rollupButtonClickHandler = (evt) => {
+    evt.preventDefault();
+    this._callback.rollupButtonClick();
+  };
+
+  #formSubmitHandler = (evt) => {
+    evt.preventDefault();
+    this._callback.formSubmit();
+  };
 }

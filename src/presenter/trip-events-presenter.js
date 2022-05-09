@@ -37,32 +37,27 @@ export default class TripEventsPresenter{
     const pointComponent = new PointView(point, this.availableOffers);
     const editPointComponent = new EditPointView(point, this.availableOffers, false);
 
-    const switchToEditPointView = () => {
+    const switchToPointView = () => {
       replace(pointComponent, editPointComponent);
-      editPointComponent.unsetRollupButtonClickHandler(onRollupButtonClick);
+      editPointComponent.unsetRollupButtonClickHandler();
       document.removeEventListener('keydown', onEscapeKeydown);
-      editPointComponent.unsetFormSubmitHandler(onFormSubmit);
+      editPointComponent.unsetFormSubmitHandler();
     };
 
-    function onRollupButtonClick(){
-      switchToEditPointView();
+    function onRollup(){
+      switchToPointView();
     }
 
     function onEscapeKeydown(evt){
       if(isEscapeKey(evt)){
-        switchToEditPointView();
+        switchToPointView();
       }
     }
 
-    function onFormSubmit(evt){
-      evt.preventDefault();
-      switchToEditPointView();
-    }
-
     const onRolldownButtonClick = () => {
-      editPointComponent.setRollupButtonClickHandler(onRollupButtonClick);
+      editPointComponent.setRollupButtonClickHandler(onRollup);
       document.addEventListener('keydown', onEscapeKeydown);
-      editPointComponent.setFormSubmitHandler(onFormSubmit);
+      editPointComponent.setFormSubmitHandler(onRollup);
       replace(editPointComponent, pointComponent);
     };
 
