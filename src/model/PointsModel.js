@@ -4,7 +4,7 @@ import { getAvailableOffers } from '../mock/offer.js';
 export default class PointsModel{
 
   constructor(){
-    this.points = Array.from({length: 0}, generatePoint);
+    this.points = Array.from({length: 20}, generatePoint);
     this.availableOffers = getAvailableOffers();
   }
 

@@ -1,4 +1,4 @@
-import {createElement} from '../render.js';
+import AbstractView from '../framework/view/abstract-view.js';
 import { humanizeDateFormat } from '../utils.js';
 
 const EVENT_TIME_FORMAT = 'YY/MM/DD HH:mm';
@@ -154,10 +154,10 @@ const editPointTemplate = (point, availableOffers, isAddView) => {
     </li>`;
 };
 
-export default class PointView{
-  #element = null;
+export default class PointView extends AbstractView{
 
   constructor(point, offers, isAddView = false){
+    super();
     this.point = point;
     this.offers = offers;
     this.isAddView = isAddView;
@@ -167,15 +167,19 @@ export default class PointView{
     return editPointTemplate(this.point, this.offers, this.isAddView);
   }
 
-  get element(){
-    if(this.#element){
-      return this.#element;
-    }
-
-    return (this.#element = createElement(this.template));
+  setRollupButtonClickHandler(handler){
+    this.element.querySelector('.event__rollup-btn').addEventListener('click', handler);
   }
 
-  removeElement(){
-    this.#element = null;
+  setFormSubmitHandler(handler){
+    this.element.querySelector('.event--edit').addEventListener('submit', handler);
+  }
+
+  unsetRollupButtonClickHandler(handler){
+    this.element.querySelector('.event__rollup-btn').removeEventListener('click', handler);
+  }
+
+  unsetFormSubmitHandler(handler){
+    this.element.querySelector('.event--edit').removeEventListener('submit', handler);
   }
 }

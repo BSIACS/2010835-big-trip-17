@@ -38,9 +38,9 @@ export default class TripEventsPresenter{
 
     const switchToEditPointView = () => {
       container.replaceChild(pointComponent.element, editPointComponent.element);
-      editPointComponent.element.querySelector('.event__rollup-btn').removeEventListener('click', onRollupButtonClick);
+      editPointComponent.unsetRollupButtonClickHandler(onRollupButtonClick);
       document.removeEventListener('keydown', onEscapeKeydown);
-      editPointComponent.element.querySelector('.event--edit').removeEventListener('submit', onFormSubmit);
+      editPointComponent.unsetFormSubmitHandler(onFormSubmit);
     };
 
     function onRollupButtonClick(){
@@ -59,13 +59,13 @@ export default class TripEventsPresenter{
     }
 
     const onRolldownButtonClick = () => {
-      editPointComponent.element.querySelector('.event__rollup-btn').addEventListener('click', onRollupButtonClick);
+      editPointComponent.setRollupButtonClickHandler(onRollupButtonClick);
       document.addEventListener('keydown', onEscapeKeydown);
-      editPointComponent.element.querySelector('.event--edit').addEventListener('submit', onFormSubmit);
+      editPointComponent.setFormSubmitHandler(onFormSubmit);
       container.replaceChild(editPointComponent.element, pointComponent.element);
     };
 
-    pointComponent.element.querySelector('.event__rollup-btn').addEventListener('click', onRolldownButtonClick);
+    pointComponent.setRolldownButtonClickHandler(onRolldownButtonClick);
 
     render(pointComponent, container, RenderPosition.BEFOREEND);
   };
