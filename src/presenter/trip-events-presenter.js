@@ -5,6 +5,7 @@ import EditPointView from '../view/edit-point-view.js';
 import PointView from '../view/point-view.js';
 import { isEscapeKey } from '../utils.js';
 import MessageView from '../view/message-view.js';
+import { replace } from '../framework/render.js';
 
 
 export default class TripEventsPresenter{
@@ -37,7 +38,7 @@ export default class TripEventsPresenter{
     const editPointComponent = new EditPointView(point, this.availableOffers, false);
 
     const switchToEditPointView = () => {
-      container.replaceChild(pointComponent.element, editPointComponent.element);
+      replace(pointComponent, editPointComponent);
       editPointComponent.unsetRollupButtonClickHandler(onRollupButtonClick);
       document.removeEventListener('keydown', onEscapeKeydown);
       editPointComponent.unsetFormSubmitHandler(onFormSubmit);
@@ -62,7 +63,7 @@ export default class TripEventsPresenter{
       editPointComponent.setRollupButtonClickHandler(onRollupButtonClick);
       document.addEventListener('keydown', onEscapeKeydown);
       editPointComponent.setFormSubmitHandler(onFormSubmit);
-      container.replaceChild(editPointComponent.element, pointComponent.element);
+      replace(editPointComponent, pointComponent);
     };
 
     pointComponent.setRolldownButtonClickHandler(onRolldownButtonClick);
