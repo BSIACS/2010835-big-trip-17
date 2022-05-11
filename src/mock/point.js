@@ -1,3 +1,4 @@
+import dayjs from 'dayjs';
 import {getRandomArrayElement, getRandomInt, getRandomUniqueIntegersArray} from '../utils.js';
 import { getAvailableOffers } from './offer.js';
 
@@ -53,11 +54,13 @@ const generateOffersIDs = (type) => {
 
 const generatePoint = (id = 0) => {
   const type = getRandomArrayElement(TYPES);
+  const dateFrom = dayjs().add(getRandomInt(-48, 48), 'hour');
+  const dateTo = dateFrom.add(getRandomInt(0, 48), 'hour');
 
   return {
     basePrice: getRandomInt(200, 2000),
-    dateFrom: '2022-05-04T05:20:00.000Z',
-    dateTo: '2022-05-05T17:10:00.000Z',
+    dateFrom: dateFrom.toISOString(),
+    dateTo: dateTo.toISOString(),
     destination: generateDestination(),
     id: id,
     isFavorite: getRandomInt(0, 1) === 0 ? 'false' : 'true',

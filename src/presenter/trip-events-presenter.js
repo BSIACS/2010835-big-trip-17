@@ -26,7 +26,7 @@ export default class TripEventsPresenter{
     }
     else{
       render(this.tripEventsListComponent, this.container, RenderPosition.BEFOREEND);
-      for (let i = 1; i < this.points.length; i++) {
+      for (let i = 0; i < this.points.length; i++) {
         this.#renderPoint(this.points[i], this.tripEventsListComponent.element);
       }
     }
