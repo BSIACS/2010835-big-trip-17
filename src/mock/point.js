@@ -12,6 +12,45 @@ const DISCRIPTIONS = [
 ];
 const CITIES = ['Chamonix', 'Geneva', 'Amsterdam', 'Barcelona', 'Kioto', 'Moscow'];
 
+const EVENTS_TIME_DURATION_IN_MINUTES = {
+  'taxi': {
+    min: 0.5 * 60,
+    max: 2 * 60,
+  },
+  'bus':{
+    min: 4 * 60,
+    max: 12 * 60,
+  },
+  'train': {
+    min: 2 * 60,
+    max: 24 * 60,
+  },
+  'ship': {
+    min: 4 * 60,
+    max: 24 * 60,
+  },
+  'drive': {
+    min: 0.5 * 60,
+    max: 12 * 60,
+  },
+  'flight': {
+    min: 4 * 60,
+    max: 12 * 60,
+  },
+  'check-in': {
+    min: 24 * 60,
+    max: 72 * 60,
+  },
+  'sightseeing': {
+    min: 1 * 60,
+    max: 6 * 60,
+  },
+  'restaurant': {
+    min: 1 * 60,
+    max: 4 * 60,
+  },
+};
+
 const generateDestination = () => ({
   description: getRandomArrayElement(DISCRIPTIONS),
   name: getRandomArrayElement(CITIES),
@@ -52,21 +91,37 @@ const generateOffersIDs = (type) => {
   return IDs;
 };
 
-const generatePoint = (id = 0) => {
+const generatePoints = (points = null) => {
+  let dateFrom = null;
+  let dateTo = null;
   const type = getRandomArrayElement(TYPES);
-  const dateFrom = dayjs().add(getRandomInt(-48, 48), 'hour');
-  const dateTo = dateFrom.add(getRandomInt(0, 48), 'hour');
 
-  return {
-    basePrice: getRandomInt(200, 2000),
-    dateFrom: dateFrom.toISOString(),
-    dateTo: dateTo.toISOString(),
-    destination: generateDestination(),
-    id: id,
-    isFavorite: getRandomInt(0, 1) === 0 ? 'false' : 'true',
-    offers: generateOffersIDs(type),
-    type,
-  };
+  if(points === null){
+    points = [];
+    dateFrom = dayjs().add(getRandomInt(-48, 48), 'hour');
+    dateTo = dateFrom.add(getRandomInt(EVENTS_TIME_DURATION_IN_MINUTES[type].min, EVENTS_TIME_DURATION_IN_MINUTES[type].max), 'minute');
+  }
+  else{
+    dateFrom = dayjs(points[points.length - 1].dateTo);
+    dateTo = dateFrom.add(getRandomInt(EVENTS_TIME_DURATION_IN_MINUTES[type].min, EVENTS_TIME_DURATION_IN_MINUTES[type].max), 'minute');
+  }
+
+  if(points.length < 10){
+    points.push({
+      basePrice: getRandomInt(200, 2000),
+      dateFrom: dateFrom.toISOString(),
+      dateTo: dateTo.toISOString(),
+      destination: generateDestination(),
+      id: points.length + 1,
+      isFavorite: getRandomInt(0, 1) === 0 ? 'false' : 'true',
+      offers: generateOffersIDs(type),
+      type,
+    });
+
+    generatePoints(points);
+  }
+
+  return points;
 };
 
-export { generatePoint };
+export { generatePoints };

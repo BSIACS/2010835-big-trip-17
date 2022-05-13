@@ -5,10 +5,10 @@ const filterItemTemplate = (config) => {
   let template = '';
 
   for(const [key,value] of Object.entries(config)){
-    const isHidden = value ? '' : 'visually-hidden';
+    const isDisabled = value ? '' : 'disabled';
     template += `
-        <div class="trip-filters__filter ${isHidden}">
-          <input id="filter-${key}" class="trip-filters__filter-input  visually-hidden" type="radio" name="trip-filter" value="${key}">
+        <div class="trip-filters__filter">
+          <input id="filter-${key}" class="trip-filters__filter-input  visually-hidden" type="radio" name="trip-filter" value="${key}" ${isDisabled}>
           <label class="trip-filters__filter-label" for="filter-${key}">${key}</label>
         </div>`;
   }
