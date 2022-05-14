@@ -2,9 +2,6 @@
 import dayjs from 'dayjs';
 
 const getRandomInt = (min = 0, max = 100) => {
-  if(min < 0 || max < 0){
-    throw new Error('Аргументы функции не могут быть меньше нуля.');
-  }
   if(min >= max){
     throw new Error('Аргумент функции "min" не может быть больше или равен аргументу функции "max".');
   }

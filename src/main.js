@@ -8,9 +8,11 @@ const tripControlsFiltersElement = document.querySelector('.trip-controls__filte
 const tripMainElement = document.querySelector('.trip-main');
 const tripEventsElement = document.querySelector('.trip-events');
 
-render(new FilterView(), tripControlsFiltersElement, RenderPosition.BEFOREEND);
+const pointModel = new PointsModel();
+
+render(new FilterView(pointModel.points), tripControlsFiltersElement, RenderPosition.BEFOREEND);
 render(new NewEventButtonView(), tripMainElement, RenderPosition.BEFOREEND);
 
-const tripEventsPresenter = new TripEventsPresenter(new PointsModel(), tripEventsElement);
+const tripEventsPresenter = new TripEventsPresenter(pointModel, tripEventsElement);
 
 tripEventsPresenter.init();
