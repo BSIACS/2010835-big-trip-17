@@ -20,10 +20,12 @@ export default class PointPresenter{
 
   #changeMode = null;
   #submit = null;
+  #changeData = null;
 
-  constructor(pointsContainer, availableOffers){
+  constructor(pointsContainer, availableOffers, changeData){
     this.#pointsContainer = pointsContainer;
     this.#availableOffers = availableOffers;
+    this.#changeData = changeData;
   }
 
   init = (point) => {
@@ -36,6 +38,7 @@ export default class PointPresenter{
     this.#editPointComponent = new EditPointView(point, this.#availableOffers, false);
 
     this.#pointComponent.setRolldownButtonClickHandler(this.#handleRolldownButtonClick);
+    this.#pointComponent.setFavoriteButtonClickHandler(this.#handleFavoriteButtonClick);
     this.#editPointComponent.setRollupButtonClickHandler(this.#handleRollupButtonClick);
     this.#editPointComponent.setFormSubmitHandler(this.#handleFormSubmit);
 
@@ -95,5 +98,9 @@ export default class PointPresenter{
   #handleFormSubmit = (evt) => {
     evt.preventDefault();
     this.#switchToPointView();
+  };
+
+  #handleFavoriteButtonClick = () => {
+    this.#changeData({...this.#point, isFavorite: this.#point.isFavorite === 'true' ? 'false' : 'true'});
   };
 }

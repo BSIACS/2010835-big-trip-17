@@ -3,6 +3,7 @@ import { render, RenderPosition } from '../render.js';
 import TripEventsListView from '../view/trip-events-list-view.js';
 import MessageView from '../view/message-view.js';
 import PointPresenter from './point-presenter.js';
+import { updateItem } from '../utils.js';
 
 
 export default class TripEventsPresenter{
@@ -32,7 +33,7 @@ export default class TripEventsPresenter{
   };
 
   #renderPoint = (point) => {
-    const pointPresenter = new PointPresenter(this.#tripEventsListComponent.element, this.availableOffers);
+    const pointPresenter = new PointPresenter(this.#tripEventsListComponent.element, this.availableOffers, this.#handlePointChange);
     this.#pointsPresenters.set(point.id, pointPresenter);
     pointPresenter.init(point);
   };
@@ -65,5 +66,10 @@ export default class TripEventsPresenter{
     });
     this.#pointsPresenters.clear();
   }
+
+  #handlePointChange = (updatedPoint) => {
+    this.#points = updateItem(this.#points, updatedPoint);
+    this.#pointsPresenters.get(updatedPoint.id).init(updatedPoint);
+  };
 }
 
