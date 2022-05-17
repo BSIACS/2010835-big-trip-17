@@ -22,10 +22,11 @@ export default class PointPresenter{
   #submit = null;
   #changeData = null;
 
-  constructor(pointsContainer, availableOffers, changeData){
+  constructor(pointsContainer, availableOffers, changeData, changeMode){
     this.#pointsContainer = pointsContainer;
     this.#availableOffers = availableOffers;
     this.#changeData = changeData;
+    this.#changeMode = changeMode;
   }
 
   init = (point) => {
@@ -60,12 +61,19 @@ export default class PointPresenter{
     remove(prevEditPointComponent);
   };
 
+  resetView = () => {
+    if (this.#mode !== Mode.DEFAULT) {
+      this.#switchToPointView();
+    }
+  };
+
   destroy = () => {
     remove(this.#pointComponent);
     remove(this.#editPointComponent);
   };
 
   #switchToEditView = () => {
+    this.#changeMode();
     replace(this.#editPointComponent, this.#pointComponent);
     document.addEventListener('keydown', this.#escKeyDownHandler);
     this.#editPointComponent.setRollupButtonClickHandler(this.#handleRollupButtonClick);

@@ -106,7 +106,7 @@ const generatePoints = (points = null) => {
     dateTo = dateFrom.add(getRandomInt(EVENTS_TIME_DURATION_IN_MINUTES[type].min, EVENTS_TIME_DURATION_IN_MINUTES[type].max), 'minute');
   }
 
-  if(points.length < 50){
+  if(points.length < 7){
     points.push({
       basePrice: getRandomInt(200, 2000),
       dateFrom: dateFrom.toISOString(),

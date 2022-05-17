@@ -33,7 +33,7 @@ export default class TripEventsPresenter{
   };
 
   #renderPoint = (point) => {
-    const pointPresenter = new PointPresenter(this.#tripEventsListComponent.element, this.availableOffers, this.#handlePointChange);
+    const pointPresenter = new PointPresenter(this.#tripEventsListComponent.element, this.availableOffers, this.#handlePointChange, this.#handleModeChange);
     this.#pointsPresenters.set(point.id, pointPresenter);
     pointPresenter.init(point);
   };
@@ -70,6 +70,10 @@ export default class TripEventsPresenter{
   #handlePointChange = (updatedPoint) => {
     this.#points = updateItem(this.#points, updatedPoint);
     this.#pointsPresenters.get(updatedPoint.id).init(updatedPoint);
+  };
+
+  #handleModeChange = () => {
+    this.#pointsPresenters.forEach((pointPresenter) => pointPresenter.resetView());
   };
 }
 
