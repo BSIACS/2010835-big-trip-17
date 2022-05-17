@@ -154,7 +154,7 @@ const editPointTemplate = (point, availableOffers, isAddView) => {
     </li>`;
 };
 
-export default class PointView extends AbstractView{
+export default class EditPointView extends AbstractView{
 
   constructor(point, offers, isAddView = false){
     super();
@@ -189,13 +189,11 @@ export default class PointView extends AbstractView{
     }
   }
 
-  #rollupButtonClickHandler = (evt) => {
-    evt.preventDefault();
+  #rollupButtonClickHandler = () => {
     this._callback.rollupButtonClick();
   };
 
   #formSubmitHandler = (evt) => {
-    evt.preventDefault();
-    this._callback.formSubmit();
+    this._callback.formSubmit(evt);
   };
 }
