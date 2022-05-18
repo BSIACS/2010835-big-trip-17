@@ -1,69 +1,79 @@
 import SortView from '../view/sort-view.js';
 import { render, RenderPosition } from '../render.js';
 import TripEventsListView from '../view/trip-events-list-view.js';
-import EditPointView from '../view/edit-point-view.js';
-import PointView from '../view/point-view.js';
-import { isEscapeKey } from '../utils.js';
 import MessageView from '../view/message-view.js';
-import { replace } from '../framework/render.js';
+import PointPresenter from './point-presenter.js';
+import { updateItem } from '../utils.js';
 
 
 export default class TripEventsPresenter{
 
+  tripEventsListView = null;
+  model = null;
+  #points = null;
+
+  #tripEventsListComponent = null;
+  #sortComponent = null;
+  #emptyListMessageComponent = null;
+
+  #pointsPresenters = new Map();
+
   constructor(model, container){
     this.model = model;
-    this.points = [...this.model.getPoints()];
+    this.#points = [...this.model.getPoints()];
     this.availableOffers = [...this.model.getAvailableOffers()];
     this.container = container;
-    this.tripEventsListComponent = new TripEventsListView();
+    this.#tripEventsListComponent = new TripEventsListView();
+    this.#sortComponent = new SortView();
+    this.#emptyListMessageComponent = new MessageView();
   }
 
   init = () => {
-    render(new SortView(), this.container, RenderPosition.BEFOREEND);
-
-    if(this.points.length === 0){
-      render(new MessageView(), this.container, RenderPosition.BEFOREEND);
-    }
-    else{
-      render(this.tripEventsListComponent, this.container, RenderPosition.BEFOREEND);
-      for (let i = 0; i < this.points.length; i++) {
-        this.#renderPoint(this.points[i], this.tripEventsListComponent.element);
-      }
-    }
-
+    this.#renderPointsList();
   };
 
-  #renderPoint = (point, container) => {
-    const pointComponent = new PointView(point, this.availableOffers);
-    const editPointComponent = new EditPointView(point, this.availableOffers, false);
+  #renderPoint = (point) => {
+    const pointPresenter = new PointPresenter(this.#tripEventsListComponent.element, this.availableOffers, this.#handlePointChange, this.#handleModeChange);
+    this.#pointsPresenters.set(point.id, pointPresenter);
+    pointPresenter.init(point);
+  };
 
-    const switchToPointView = () => {
-      replace(pointComponent, editPointComponent);
-      editPointComponent.unsetRollupButtonClickHandler();
-      document.removeEventListener('keydown', onEscapeKeydown);
-      editPointComponent.unsetFormSubmitHandler();
-    };
+  #renderPoints = () => {
+    render(this.#tripEventsListComponent, this.container, RenderPosition.BEFOREEND);
+    this.#points.forEach((point) => {
+      this.#renderPoint(point);
+    });
+  };
 
-    function onRollup(){
-      switchToPointView();
+  #renderNoPoints = () => {
+    render(this.#emptyListMessageComponent, this.container, RenderPosition.BEFOREEND);
+  };
+
+  #renderPointsList = () => {
+    render(this.#sortComponent, this.container, RenderPosition.BEFOREEND);
+
+    if(this.#points.length === 0){
+      this.#renderNoPoints();
     }
-
-    function onEscapeKeydown(evt){
-      if(isEscapeKey(evt)){
-        switchToPointView();
-      }
+    else{
+      this.#renderPoints();
     }
+  };
 
-    const onRolldownButtonClick = () => {
-      editPointComponent.setRollupButtonClickHandler(onRollup);
-      document.addEventListener('keydown', onEscapeKeydown);
-      editPointComponent.setFormSubmitHandler(onRollup);
-      replace(editPointComponent, pointComponent);
-    };
+  #clearPointsList(){
+    this.#pointsPresenters.forEach((pointPresenter) => {
+      pointPresenter.destroy();
+    });
+    this.#pointsPresenters.clear();
+  }
 
-    pointComponent.setRolldownButtonClickHandler(onRolldownButtonClick);
+  #handlePointChange = (updatedPoint) => {
+    this.#points = updateItem(this.#points, updatedPoint);
+    this.#pointsPresenters.get(updatedPoint.id).init(updatedPoint);
+  };
 
-    render(pointComponent, container, RenderPosition.BEFOREEND);
+  #handleModeChange = () => {
+    this.#pointsPresenters.forEach((pointPresenter) => pointPresenter.resetView());
   };
 }
 
