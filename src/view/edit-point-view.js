@@ -1,4 +1,4 @@
-import AbstractView from '../framework/view/abstract-view.js';
+import AbstractStatefulView from '../framework/view/abstract-stateful-view.js';
 import { humanizeDateFormat } from '../utils.js';
 
 const EVENT_TIME_FORMAT = 'YY/MM/DD HH:mm';
@@ -33,7 +33,7 @@ const getEventTypeListTemplate = (checkedType, types) => {
 const getOffersTemplate = (availableOffers, checkedOffersIDs, type) => {
   let template = '';
 
-  if(!checkedOffersIDs || checkedOffersIDs.length === 0){
+  if(!availableOffers || availableOffers.length === 0){
     return template;
   }
 
@@ -86,14 +86,20 @@ const getPhotosTemplate = (pictures) => {
   return template;
 };
 
-const editPointTemplate = (point, availableOffers, isAddView) => {
-  const {dateFrom, dateTo, destination, offers, type} = point;
+const getDestinationsListTemplate = (destinations, selectedId = 2) => {
+  let count = 0;
+  const options = destinations.map((destination) => (`<option value="${count}" ${count++ === Number(selectedId) ? 'selected' : ''}>${destination.name}</option>`));
+  return `
+    <select class="event__input  event__input--destination" id="event-destination-1" type="text" name="event-destination"list="destination-list-1">
+      ${options}
+    </select>`;
+};
 
+const editPointTemplate = (data, availableOffers, types, availableDestinations, isAddView) => {
+  const {dateFrom, dateTo, destination, offers, type} = data;
   const eventResetBtnTextContent = isAddView ? 'Cancel' : 'Delete';
-  const description = destination.description;
-
-  const types = availableOffers.map((element) => element.type);
-  availableOffers = availableOffers.find((element) => element.type === type).offers;
+  const description = availableDestinations[data.destination].description;
+  const eventAvailableOffers = availableOffers.find((element) => element.type === data.type).offers;
 
   return `
     <li class="trip-events__item">
@@ -112,12 +118,8 @@ const editPointTemplate = (point, availableOffers, isAddView) => {
             <label class="event__label  event__type-output" for="event-destination-1">
               ${type}
             </label>
-            <input class="event__input  event__input--destination" id="event-destination-1" type="text" name="event-destination" value="${point.destination.name}" list="destination-list-1">
-            <datalist id="destination-list-1">
-              <option value="Amsterdam"></option>
-              <option value="Geneva"></option>
-              <option value="Chamonix"></option>
-            </datalist>
+            ${getDestinationsListTemplate(availableDestinations, data.destination)}
+
           </div>
 
           <div class="event__field-group  event__field-group--time">
@@ -143,39 +145,83 @@ const editPointTemplate = (point, availableOffers, isAddView) => {
           </button>
         </header>
         <section class="event__details">
-          ${getOffersTemplate(availableOffers, offers, type)}
+          ${getOffersTemplate(eventAvailableOffers, offers, type)}
           <section class="event__section  event__section--destination">
             <h3 class="event__section-title  event__section-title--destination">Destination</h3>
             <p class="event__destination-description">${description}</p>
-            ${getPhotosTemplate(destination.pictures)}
+            ${getPhotosTemplate(availableDestinations[destination].pictures)}
           </section>
         </section>
       </form>
     </li>`;
 };
 
-export default class EditPointView extends AbstractView{
+export default class EditPointView extends AbstractStatefulView{
+  _availableOffers = null;
+  _types = null;
+  _isAddView = null;
+  _availableDestinations = null;
 
-  constructor(point, offers, isAddView = false){
+  constructor(point, availableOffers, destinations, isAddView = false){
     super();
-    this.point = point;
-    this.offers = offers;
-    this.isAddView = isAddView;
+    this._availableOffers = availableOffers;
+    this._types = availableOffers.map((element) => element.type);
+    this._isAddView = isAddView;
+    this._availableDestinations = destinations;
+    this._state = this.parsePointToState(point);
+    this.setInnerHandlers();
   }
 
   get template(){
-    return editPointTemplate(this.point, this.offers, this.isAddView);
+    return editPointTemplate(this._state, this._availableOffers, this._types, this._availableDestinations, this._isAddView);
   }
 
+  parsePointToState = (point) => {
+    let destinationId = null;
+
+    for (let i = 0; i < this._availableDestinations.length; i++) {
+      const element = this._availableDestinations[i];
+      if (point.destination.name === element.name && point.destination.description === element.description){
+        destinationId = i;
+        break;
+      }
+    }
+
+    const pointData = {...point,
+      destination: destinationId
+    };
+
+    return pointData;
+  };
+
+  parseStateToPoint = () => ({...this._state, destination: this._availableDestinations[this._state.destination]});
+
+  reset = (point) => {
+    this.updateElement(this.parsePointToState(point));
+  };
+
   setRollupButtonClickHandler(callback){
-    this._callback.rollupButtonClick = callback;
+    if(callback){
+      this._callback.rollupButtonClick = callback;
+    }
     this.element.querySelector('.event__rollup-btn').addEventListener('click', this.#rollupButtonClickHandler);
   }
 
   setFormSubmitHandler(callback){
-    this._callback.formSubmit = callback;
+    if(callback){
+      this._callback.formSubmit = callback;
+    }
     this.element.querySelector('.event--edit').addEventListener('submit', this.#formSubmitHandler);
   }
+
+  setInnerHandlers = () => {
+    this.element.querySelector('.event__input--destination').addEventListener('change', this.#destinationInputClickHandler);
+
+    const elements = this.element.querySelectorAll('.event__type-item');
+    elements.forEach((element) => {
+      element.addEventListener('click', this.#eventTypeItemClickHandler);
+    });
+  };
 
   unsetRollupButtonClickHandler(){
     if(this._callback.rollupButtonClick){
@@ -194,6 +240,29 @@ export default class EditPointView extends AbstractView{
   };
 
   #formSubmitHandler = (evt) => {
-    this._callback.formSubmit(evt);
+    evt.preventDefault();
+    this._callback.formSubmit(this.parseStateToPoint(this._state));
+  };
+
+  #destinationInputClickHandler = (evt) => {
+    evt.preventDefault();
+    const index = document.querySelector('.event__input--destination').value;
+    this.updateElement({
+      destination: index
+    });
+  };
+
+  #eventTypeItemClickHandler = (evt) => {
+    evt.preventDefault();
+    this.updateElement({
+      type: evt.target.textContent.toLowerCase(),
+      offers: []
+    });
+  };
+
+  _restoreHandlers = () => {
+    this.setInnerHandlers();
+    this.setRollupButtonClickHandler();
+    this.setFormSubmitHandler();
   };
 }

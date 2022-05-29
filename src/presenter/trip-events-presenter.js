@@ -25,6 +25,7 @@ export default class TripEventsPresenter{
     this.model = model;
     this.#points = [...this.model.getPoints()];
     this.availableOffers = [...this.model.getAvailableOffers()];
+    this.availableDestinations = [...this.model.getAvailableDestinations()];
     this.container = container;
     this.#tripEventsListComponent = new TripEventsListView();
     this.#sortComponent = new SortView();
@@ -36,7 +37,7 @@ export default class TripEventsPresenter{
   };
 
   #renderPoint = (point) => {
-    const pointPresenter = new PointPresenter(this.#tripEventsListComponent.element, this.availableOffers, this.#handlePointChange, this.#handleModeChange);
+    const pointPresenter = new PointPresenter(this.#tripEventsListComponent.element, this.availableOffers, this.availableDestinations, this.#handlePointChange, this.#handleModeChange);
     this.#pointsPresenters.set(point.id, pointPresenter);
     pointPresenter.init(point);
   };
