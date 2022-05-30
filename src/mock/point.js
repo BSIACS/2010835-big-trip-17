@@ -78,6 +78,18 @@ const generateDestination = () => ({
   ]
 });
 
+let destinations = null;
+
+const generateDestinations = (length = 10) => {
+  if(destinations !== null){
+    return destinations;
+  }
+  else{
+    destinations = Array.from({length}, generateDestination);
+    return destinations;
+  }
+};
+
 const generateOffersIDs = (type) => {
   let IDs = null;
   const offer = getAvailableOffers().find((element) => element.type === type);
@@ -111,7 +123,7 @@ const generatePoints = (points = null) => {
       basePrice: getRandomInt(200, 2000),
       dateFrom: dateFrom.toISOString(),
       dateTo: dateTo.toISOString(),
-      destination: generateDestination(),
+      destination: destinations[getRandomInt(0, destinations.length - 1)],
       id: points.length + 1,
       isFavorite: getRandomInt(0, 1) === 0 ? 'false' : 'true',
       offers: generateOffersIDs(type),
@@ -124,4 +136,4 @@ const generatePoints = (points = null) => {
   return points;
 };
 
-export { generatePoints };
+export { generatePoints, generateDestinations };

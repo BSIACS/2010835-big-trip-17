@@ -11,6 +11,7 @@ const Mode = {
 export default class PointPresenter{
   #point = null;
   #availableOffers = null;
+  #availableDestinations = null;
   #mode = Mode.DEFAULT;
 
   #pointComponent = null;
@@ -22,9 +23,10 @@ export default class PointPresenter{
   #submit = null;
   #changeData = null;
 
-  constructor(pointsContainer, availableOffers, changeData, changeMode){
+  constructor(pointsContainer, availableOffers, availableDestinations, changeData, changeMode){
     this.#pointsContainer = pointsContainer;
     this.#availableOffers = availableOffers;
+    this.#availableDestinations = availableDestinations;
     this.#changeData = changeData;
     this.#changeMode = changeMode;
   }
@@ -36,7 +38,7 @@ export default class PointPresenter{
     const prevEditPointComponent = this.#editPointComponent;
 
     this.#pointComponent = new PointView(point, this.#availableOffers);
-    this.#editPointComponent = new EditPointView(point, this.#availableOffers, false);
+    this.#editPointComponent = new EditPointView(point, this.#availableOffers, this.#availableDestinations, false);
 
     this.#pointComponent.setRolldownButtonClickHandler(this.#handleRolldownButtonClick);
     this.#pointComponent.setFavoriteButtonClickHandler(this.#handleFavoriteButtonClick);
@@ -63,6 +65,7 @@ export default class PointPresenter{
 
   resetView = () => {
     if (this.#mode !== Mode.DEFAULT) {
+      this.#editPointComponent.reset(this.#point);
       this.#switchToPointView();
     }
   };
@@ -73,11 +76,11 @@ export default class PointPresenter{
   };
 
   #switchToEditView = () => {
-    this.#changeMode();
     replace(this.#editPointComponent, this.#pointComponent);
     document.addEventListener('keydown', this.#escKeyDownHandler);
     this.#editPointComponent.setRollupButtonClickHandler(this.#handleRollupButtonClick);
     this.#editPointComponent.setFormSubmitHandler(this.#handleFormSubmit);
+    this.#changeMode();
     this.#mode = Mode.EDITING;
   };
 
@@ -91,6 +94,7 @@ export default class PointPresenter{
 
   #escKeyDownHandler = (evt) => {
     if(isEscapeKey(evt)){
+      this.#editPointComponent.reset(this.#point);
       this.#switchToPointView();
     }
   };
@@ -100,11 +104,12 @@ export default class PointPresenter{
   };
 
   #handleRollupButtonClick = () => {
+    this.#editPointComponent.reset(this.#point);
     this.#switchToPointView();
   };
 
-  #handleFormSubmit = (evt) => {
-    evt.preventDefault();
+  #handleFormSubmit = (point) => {
+    this.#changeData(point);
     this.#switchToPointView();
   };
 
