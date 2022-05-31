@@ -23,13 +23,17 @@ export default class TripEventsPresenter{
 
   constructor(model, container){
     this.model = model;
-    this.#points = [...this.model.getPoints()];
-    this.availableOffers = [...this.model.getAvailableOffers()];
-    this.availableDestinations = [...this.model.getAvailableDestinations()];
+    this.#points = [...this.model.points];
+    this.availableOffers = [...this.model.availableOffers];
+    this.availableDestinations = [...this.model.availableDestinations];
     this.container = container;
     this.#tripEventsListComponent = new TripEventsListView();
     this.#sortComponent = new SortView();
     this.#emptyListMessageComponent = new MessageView();
+  }
+
+  get points(){
+    return this.model.points;
   }
 
   init = () => {
