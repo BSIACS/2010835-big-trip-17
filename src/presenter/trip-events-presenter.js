@@ -13,7 +13,6 @@ export default class TripEventsPresenter{
   #pointsModel = null;
   #offersModel = null;
   #destinationsModel = null;
-  #points = null;
   #currentSortKey = SortKeys.DAY;
   #prevSortKey = SortKeys.DAY;
 
@@ -27,7 +26,6 @@ export default class TripEventsPresenter{
     this.#pointsModel = pointsModel;
     this.#offersModel = offersModel;
     this.#destinationsModel = destinationsModel;
-    this.#points = [...this.#pointsModel.points];
     this.availableOffers = [...this.#offersModel.offers];
     this.availableDestinations = [...this.#destinationsModel.destinations];
     this.container = container;
@@ -40,11 +38,11 @@ export default class TripEventsPresenter{
   get points(){
     switch(this.#currentSortKey){
       case SortKeys.DAY:
-        return this.#sortByDay([...this.#points]);
+        return this.#sortByDay([...this.#pointsModel.points]);
       case SortKeys.TIME:
-        return this.#sortByTimeDuration([...this.#points]);
+        return this.#sortByTimeDuration([...this.#pointsModel.points]);
       case SortKeys.PRICE:
-        return this.#sortByPrice([...this.#points]);
+        return this.#sortByPrice([...this.#pointsModel.points]);
     }
 
     return this.model.points;
@@ -110,7 +108,7 @@ export default class TripEventsPresenter{
         this.#pointsModel.points.addPoint(updateType, update);
         break;
       case UserAction.DELETE_POINT:
-        this.#pointsModel.points.deletePoint(updateType, update);
+        this.#pointsModel.deletePoint(updateType, update);
         break;
     }
   };
@@ -151,28 +149,10 @@ export default class TripEventsPresenter{
     this.#prevSortKey = this.#currentSortKey;
   };
 
-  #sortByPrice = (points) => {
-    if(this.#prevSortKey === SortKeys.PRICE){
-      return points;
-    }
+  #sortByPrice = (points) => points.sort((prev, next) => next.basePrice - prev.basePrice);
 
-    return points.sort((prev, next) => next.basePrice - prev.basePrice);
-  };
+  #sortByDay = (points) => points.sort((prev, next) => dayjs(next.dateFrom).isBefore(dayjs(prev.dateFrom)) ? 1 : -1);
 
-  #sortByDay = (points) => {
-    if(this.#prevSortKey === SortKeys.DAY){
-      return points;
-    }
-
-    return points.sort((prev, next) => dayjs(next.dateFrom).isBefore(dayjs(prev.dateFrom)) ? 1 : -1);
-  };
-
-  #sortByTimeDuration = (points) => {
-    if(this.#prevSortKey === SortKeys.TIME){
-      return points;
-
-    }
-    return points.sort((prev, next) => dayjs(next.dateTo).diff(next.dateFrom, 'minute') - dayjs(prev.dateTo).diff(prev.dateFrom, 'minute'));
-  };
+  #sortByTimeDuration = (points) => points.sort((prev, next) => dayjs(next.dateTo).diff(next.dateFrom, 'minute') - dayjs(prev.dateTo).diff(prev.dateFrom, 'minute'));
 }
 
