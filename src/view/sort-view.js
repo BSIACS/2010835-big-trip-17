@@ -32,9 +32,10 @@ const sortTemplate = () => `
 export default class SortView extends AbstractView{
   #tripSortInputs = null;
 
-  constructor(){
+  constructor(sortKey){
     super();
     this.#tripSortInputs = this.element.querySelectorAll('.trip-sort__input');
+    this.#setSelectedInputChecked(sortKey);
   }
 
   get template(){

@@ -2,6 +2,7 @@ import PointView from '../view/point-view.js';
 import { RenderPosition, render, replace, remove } from '../framework/render.js';
 import EditPointView from '../view/edit-point-view.js';
 import { isEscapeKey } from '../utils.js';
+import { UserAction, UpdateType } from '../constants.js';
 
 const Mode = {
   DEFAULT: 'DEFAULT',
@@ -109,11 +110,19 @@ export default class PointPresenter{
   };
 
   #handleFormSubmit = (point) => {
-    this.#changeData(point);
+    this.#changeData(
+      UserAction.UPDATE_POINT,
+      UpdateType.PATCH,
+      point
+    );
     this.#switchToPointView();
   };
 
   #handleFavoriteButtonClick = () => {
-    this.#changeData({...this.#point, isFavorite: this.#point.isFavorite === 'true' ? 'false' : 'true'});
+    this.#changeData(
+      UserAction.UPDATE_POINT,
+      UpdateType.PATCH,
+      {...this.#point, isFavorite: this.#point.isFavorite === 'true' ? 'false' : 'true'}
+    );
   };
 }
