@@ -22,4 +22,10 @@ const FilterType = {
   PAST: 'PAST',
 };
 
-export {SortKeys, UserAction, UpdateType, FilterType};
+const NoPointsMessage = {
+  EVERYTHING: 'Click New Event to create your first point',
+  FUTURE: 'There are no future events now',
+  PAST: 'There are no past events now',
+};
+
+export {SortKeys, UserAction, UpdateType, FilterType, NoPointsMessage};

@@ -4,13 +4,15 @@ import TripEventsListView from '../view/trip-events-list-view.js';
 import MessageView from '../view/message-view.js';
 import PointPresenter from './point-presenter.js';
 import dayjs from 'dayjs';
-import { SortKeys, UpdateType, UserAction } from '../constants.js';
+import { NoPointsMessage, SortKeys, UpdateType, UserAction } from '../constants.js';
+import { filterApply } from '../utils/filter.js';
 
 
 export default class TripEventsPresenter{
 
   tripEventsListView = null;
   #pointsModel = null;
+  #filterModel = null;
   #offersModel = null;
   #destinationsModel = null;
   #currentSortKey = SortKeys.DAY;
@@ -22,8 +24,9 @@ export default class TripEventsPresenter{
 
   #pointsPresenters = new Map();
 
-  constructor(pointsModel, offersModel, destinationsModel, container){
+  constructor(pointsModel, filterModel, offersModel, destinationsModel, container){
     this.#pointsModel = pointsModel;
+    this.#filterModel = filterModel;
     this.#offersModel = offersModel;
     this.#destinationsModel = destinationsModel;
     this.availableOffers = [...this.#offersModel.offers];
@@ -33,16 +36,17 @@ export default class TripEventsPresenter{
     this.#sortComponent = null;
     this.#emptyListMessageComponent = null;
     this.#pointsModel.addObserver(this.#handleModelEvent);
+    this.#filterModel.addObserver(this.#handleModelEvent);
   }
 
   get points(){
     switch(this.#currentSortKey){
       case SortKeys.DAY:
-        return this.#sortByDay([...this.#pointsModel.points]);
+        return filterApply(this.#sortByDay([...this.#pointsModel.points]), this.#filterModel.filter);
       case SortKeys.TIME:
-        return this.#sortByTimeDuration([...this.#pointsModel.points]);
+        return filterApply(this.#sortByTimeDuration([...this.#pointsModel.points]), this.#filterModel.filter);
       case SortKeys.PRICE:
-        return this.#sortByPrice([...this.#pointsModel.points]);
+        return filterApply(this.#sortByPrice([...this.#pointsModel.points]), this.#filterModel.filter);
     }
 
     return this.model.points;
@@ -64,8 +68,8 @@ export default class TripEventsPresenter{
     });
   };
 
-  #renderNoPoints = () => {
-    this.#emptyListMessageComponent = new MessageView();
+  #renderNoPoints = (messageContent) => {
+    this.#emptyListMessageComponent = new MessageView(messageContent);
     render(this.#emptyListMessageComponent, this.container, RenderPosition.BEFOREEND);
   };
 
@@ -79,7 +83,7 @@ export default class TripEventsPresenter{
     const points = this.points;
 
     if(points.length === 0){
-      this.#renderNoPoints();
+      this.#renderNoPoints(NoPointsMessage[this.#filterModel.filter]);
 
       return;
     }
@@ -123,6 +127,8 @@ export default class TripEventsPresenter{
         this.#renderTripEventsSection();
         break;
       case UpdateType.MAJOR:
+        this.#currentSortKey = SortKeys.DAY;
+        this.#prevSortKey = SortKeys.DAY;
         this.#clearTripEventsSection();
         this.#renderTripEventsSection();
         break;
