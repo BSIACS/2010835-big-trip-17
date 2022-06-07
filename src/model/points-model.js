@@ -31,6 +31,7 @@ export default class PointsModel extends Observable{
   };
 
   addPoint = (updateType, update) => {
+    update.id = Math.floor(Date.now() / 1000);
     this.#points = [
       update,
       ...this.#points,

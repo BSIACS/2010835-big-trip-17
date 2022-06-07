@@ -1,7 +1,19 @@
 import AbstractStatefulView from '../framework/view/abstract-stateful-view.js';
+import { generateDestinations } from '../mock/point.js';
 import { humanizeDateFormat } from '../utils.js';
 
 const EVENT_TIME_FORMAT = 'YY/MM/DD HH:mm';
+
+const BLANK_POINT = {
+  basePrice: 777,
+  dateFrom: '2022-05-04T05:20:00.000Z',
+  dateTo: '2022-05-05T17:10:00.000Z',
+  destination: generateDestinations()[0],
+  id: 12987,
+  isFavorite: 'false',
+  offers: [],
+  type: 'check-in',
+};
 
 const getEventTypeItemTemplate = (eventType, checkedType) => {
   const isChecked = eventType === checkedType ? 'checked' : '';
@@ -95,6 +107,12 @@ const getDestinationsListTemplate = (destinations, selectedId = 2) => {
     </select>`;
 };
 
+const getButtonRollupTemplate = () => `
+  <button class="event__rollup-btn" type="button">
+    <span class="visually-hidden">Open event</span>
+  </button>
+`;
+
 const editPointTemplate = (data, availableOffers, types, availableDestinations, isAddView) => {
   const {dateFrom, dateTo, destination, offers, type, basePrice} = data;
   const eventResetBtnTextContent = isAddView ? 'Cancel' : 'Delete';
@@ -140,9 +158,7 @@ const editPointTemplate = (data, availableOffers, types, availableDestinations, 
 
           <button class="event__save-btn  btn  btn--blue" type="submit">Save</button>
           <button class="event__reset-btn" type="reset">${eventResetBtnTextContent}</button>
-          <button class="event__rollup-btn" type="button">
-                  <span class="visually-hidden">Open event</span>
-          </button>
+          ${isAddView ? '' : getButtonRollupTemplate()}
         </header>
         <section class="event__details">
           ${getOffersTemplate(eventAvailableOffers, offers, type)}
@@ -164,6 +180,7 @@ export default class EditPointView extends AbstractStatefulView{
 
   constructor(point, availableOffers, destinations, isAddView = false){
     super();
+    point = isAddView === true ? BLANK_POINT : point;
     this.#availableOffers = availableOffers;
     this.#types = availableOffers.map((element) => element.type);
     this.#isAddView = isAddView;
@@ -307,7 +324,9 @@ export default class EditPointView extends AbstractStatefulView{
 
   _restoreHandlers = () => {
     this.setInnerHandlers();
-    this.setRollupButtonClickHandler();
+    if(!this.#isAddView){
+      this.setRollupButtonClickHandler();
+    }
     this.setFormSubmitHandler();
     this.setDeleteButtonClickHandler();
   };

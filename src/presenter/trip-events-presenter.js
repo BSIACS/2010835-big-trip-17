@@ -4,8 +4,9 @@ import TripEventsListView from '../view/trip-events-list-view.js';
 import MessageView from '../view/message-view.js';
 import PointPresenter from './point-presenter.js';
 import dayjs from 'dayjs';
-import { NoPointsMessage, SortKeys, UpdateType, UserAction } from '../constants.js';
+import { FilterType, NoPointsMessage, SortKeys, UpdateType, UserAction } from '../constants.js';
 import { filterApply } from '../utils/filter.js';
+import NewPointPresenter from './new-point-presenter.js';
 
 
 export default class TripEventsPresenter{
@@ -13,6 +14,7 @@ export default class TripEventsPresenter{
   tripEventsListView = null;
   #pointsModel = null;
   #filterModel = null;
+  #newEventButtonModel = null;
   #offersModel = null;
   #destinationsModel = null;
   #currentSortKey = SortKeys.DAY;
@@ -23,8 +25,9 @@ export default class TripEventsPresenter{
   #emptyListMessageComponent = null;
 
   #pointsPresenters = new Map();
+  #newPointPresenter = null;
 
-  constructor(pointsModel, filterModel, offersModel, destinationsModel, container){
+  constructor(pointsModel, filterModel, newEventButtonModel, offersModel, destinationsModel, container){
     this.#pointsModel = pointsModel;
     this.#filterModel = filterModel;
     this.#offersModel = offersModel;
@@ -37,6 +40,8 @@ export default class TripEventsPresenter{
     this.#emptyListMessageComponent = null;
     this.#pointsModel.addObserver(this.#handleModelEvent);
     this.#filterModel.addObserver(this.#handleModelEvent);
+    this.#newEventButtonModel = newEventButtonModel;
+    this.#newEventButtonModel.addObserver(this.#handleAddNewButtonEvent);
   }
 
   get points(){
@@ -54,6 +59,21 @@ export default class TripEventsPresenter{
 
   init = () => {
     this.#renderTripEventsSection();
+  };
+
+  #createNewPoint = () => {
+    this.#filterModel.setFilter(UpdateType.MAJOR, FilterType.EVERYTHING);
+    this.#newPointPresenter = new NewPointPresenter(this.#tripEventsListComponent.element, this.availableOffers, this.availableDestinations, this.#handleViewAction);
+    this.#newPointPresenter.init();
+    this.#newPointPresenter.setEscKeyDownHandler(this.#destroyNewPoint);
+  };
+
+  #destroyNewPoint = () => {
+    if(this.#newPointPresenter){
+      this.#newPointPresenter.clearView();
+      this.#newPointPresenter = null;
+      this.#newEventButtonModel.isPressed = false;
+    }
   };
 
   #renderPoint = (point) => {
@@ -109,11 +129,16 @@ export default class TripEventsPresenter{
         this.#pointsModel.updatePoint(updateType, update);
         break;
       case UserAction.ADD_POINT:
-        this.#pointsModel.points.addPoint(updateType, update);
+        this.#pointsModel.addPoint(updateType, update);
+        this.#destroyNewPoint();
         break;
       case UserAction.DELETE_POINT:
         this.#pointsModel.deletePoint(updateType, update);
         break;
+      case UserAction.DELETE_NEW_POINT:
+        this.#destroyNewPoint();
+        break;
+
     }
   };
 
@@ -123,20 +148,29 @@ export default class TripEventsPresenter{
         this.#pointsPresenters.get(data.id).init(data);
         break;
       case UpdateType.MINOR:
+        this.#destroyNewPoint();
         this.#clearTripEventsSection();
         this.#renderTripEventsSection();
         break;
       case UpdateType.MAJOR:
         this.#currentSortKey = SortKeys.DAY;
         this.#prevSortKey = SortKeys.DAY;
+        this.#destroyNewPoint();
         this.#clearTripEventsSection();
         this.#renderTripEventsSection();
         break;
     }
   };
 
+  #handleAddNewButtonEvent = (isPressed) => {
+    if(isPressed){
+      this.#createNewPoint();
+    }
+  };
+
   #handleModeChange = () => {
     this.#pointsPresenters.forEach((pointPresenter) => pointPresenter.resetView());
+    this.#destroyNewPoint();
   };
 
   #handleSortButtonClick = (sortKey) => {
@@ -150,6 +184,7 @@ export default class TripEventsPresenter{
       return;
     }
 
+    this.#destroyNewPoint();
     this.#clearTripEventsSection();
     this.#renderTripEventsSection();
     this.#prevSortKey = this.#currentSortKey;
