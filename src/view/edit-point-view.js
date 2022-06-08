@@ -232,7 +232,9 @@ export default class EditPointView extends AbstractStatefulView{
   }
 
   setDeleteButtonClickHandler = (callback) => {
-    this._callback.deleteButtonClick = callback;
+    if(callback){
+      this._callback.deleteButtonClick = callback;
+    }
     this.element.querySelector('.event__reset-btn').addEventListener('click', this.#deleteButtonClickHandler);
   };
 
@@ -302,14 +304,15 @@ export default class EditPointView extends AbstractStatefulView{
         offers.push(targetId);
         offers.sort();
       }
-      this.updateElement({
+      this._setState({
         offers: offers
       });
     }
   };
 
   #basePriceChangeHandler = (evt) => {
-    this.updateElement({
+    evt.preventDefault();
+    this._setState({
       basePrice: evt.target.value
     });
   };
