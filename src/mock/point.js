@@ -110,7 +110,7 @@ const generatePoints = (points = null) => {
 
   if(points === null){
     points = [];
-    dateFrom = dayjs().add(getRandomInt(-48, 48), 'hour');
+    dateFrom = dayjs().add(getRandomInt(-72, 48), 'hour');
     dateTo = dateFrom.add(getRandomInt(EVENTS_TIME_DURATION_IN_MINUTES[type].min, EVENTS_TIME_DURATION_IN_MINUTES[type].max), 'minute');
   }
   else{
