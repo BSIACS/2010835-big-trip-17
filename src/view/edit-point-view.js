@@ -5,7 +5,7 @@ import { humanizeDateFormat } from '../utils.js';
 const EVENT_TIME_FORMAT = 'YY/MM/DD HH:mm';
 
 const BLANK_POINT = {
-  basePrice: 777,
+  basePrice: 0,
   dateFrom: '2022-05-04T05:20:00.000Z',
   dateTo: '2022-05-05T17:10:00.000Z',
   destination: generateDestinations()[0],
@@ -182,7 +182,6 @@ export default class EditPointView extends AbstractStatefulView{
     super();
     point = isAddView === true ? BLANK_POINT : point;
     this.#availableOffers = availableOffers;
-    this.#types = availableOffers.map((element) => element.type);
     this.#isAddView = isAddView;
     this.#availableDestinations = destinations;
     this._state = this.parsePointToState(point);
@@ -190,6 +189,7 @@ export default class EditPointView extends AbstractStatefulView{
   }
 
   get template(){
+    this.#types = this.#availableOffers.map((element) => element.type);
     return editPointTemplate(this._state, this.#availableOffers, this.#types, this.#availableDestinations, this.#isAddView);
   }
 
@@ -198,7 +198,8 @@ export default class EditPointView extends AbstractStatefulView{
 
     for (let i = 0; i < this.#availableDestinations.length; i++) {
       const element = this.#availableDestinations[i];
-      if (point.destination.name === element.name && point.destination.description === element.description){
+      //if (point.destination.name === element.name && point.destination.description === element.description){
+      if (point.destination.name === element.name){
         destinationId = i;
         break;
       }

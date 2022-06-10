@@ -41,6 +41,10 @@ export default class FilterView extends AbstractView{
   }
 
   get template(){
+    if(!this.points){
+      return filterFormTemplate(this.filtersConfig, this.#filterType);
+    }
+
     let i = 0;
 
     while(i < this.points.length && !this.isAllFiltersNecessary()){
