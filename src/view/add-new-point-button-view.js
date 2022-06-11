@@ -4,8 +4,9 @@ const newEventButtonTemplate = () => '<button class="trip-main__event-add-btn  b
 
 export default class AddNewPointButtonView extends AbstractView{
 
-  constructor(){
+  constructor(isDisabled = true){
     super();
+    this.element.disabled = isDisabled;
   }
 
   get template(){

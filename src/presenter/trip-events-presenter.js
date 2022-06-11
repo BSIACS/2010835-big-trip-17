@@ -7,6 +7,7 @@ import dayjs from 'dayjs';
 import { FilterType, NoPointsMessage, SortKeys, UpdateType, UserAction } from '../constants.js';
 import { filterApply } from '../utils/filter.js';
 import NewPointPresenter from './new-point-presenter.js';
+import LoadingView from '../view/loading-view.js';
 
 
 export default class TripEventsPresenter{
@@ -23,25 +24,30 @@ export default class TripEventsPresenter{
   #tripEventsListComponent = null;
   #sortComponent = null;
   #emptyListMessageComponent = null;
+  #loadingComponent = null;
 
   #pointsPresenters = new Map();
   #newPointPresenter = null;
 
-  constructor(pointsModel, filterModel, newEventButtonModel, offersModel, destinationsModel, container){
+  #isLoading = null;
+
+  constructor(container, pointsModel, filterModel, newEventButtonModel, offersModel, destinationsModel){
     this.#pointsModel = pointsModel;
     this.#filterModel = filterModel;
     this.#offersModel = offersModel;
     this.#destinationsModel = destinationsModel;
-    this.availableOffers = [...this.#offersModel.offers];
-    this.availableDestinations = [...this.#destinationsModel.destinations];
     this.container = container;
     this.#tripEventsListComponent = new TripEventsListView();
+    this.#loadingComponent = new LoadingView();
     this.#sortComponent = null;
     this.#emptyListMessageComponent = null;
     this.#pointsModel.addObserver(this.#handleModelEvent);
+    this.#offersModel.addObserver(this.#handleModelEvent);
+    this.#destinationsModel.addObserver(this.#handleModelEvent);
     this.#filterModel.addObserver(this.#handleModelEvent);
     this.#newEventButtonModel = newEventButtonModel;
     this.#newEventButtonModel.addObserver(this.#handleAddNewButtonEvent);
+    this.#isLoading = true;
   }
 
   get points(){
@@ -63,7 +69,7 @@ export default class TripEventsPresenter{
 
   #createNewPoint = () => {
     this.#filterModel.setFilter(UpdateType.MAJOR, FilterType.EVERYTHING);
-    this.#newPointPresenter = new NewPointPresenter(this.#tripEventsListComponent.element, this.availableOffers, this.availableDestinations, this.#handleViewAction);
+    this.#newPointPresenter = new NewPointPresenter(this.#tripEventsListComponent.element, this.#offersModel.offers, this.#destinationsModel.destinations, this.#handleViewAction);
     this.#newPointPresenter.init();
     this.#newPointPresenter.setEscKeyDownHandler(this.#destroyNewPoint);
   };
@@ -77,7 +83,7 @@ export default class TripEventsPresenter{
   };
 
   #renderPoint = (point) => {
-    const pointPresenter = new PointPresenter(this.#tripEventsListComponent.element, this.availableOffers, this.availableDestinations, this.#handleViewAction, this.#handleModeChange);
+    const pointPresenter = new PointPresenter(this.#tripEventsListComponent.element, this.#offersModel.offers, this.#destinationsModel.destinations, this.#handleViewAction, this.#handleModeChange);
     this.#pointsPresenters.set(point.id, pointPresenter);
     pointPresenter.init(point);
   };
@@ -99,7 +105,16 @@ export default class TripEventsPresenter{
     render(this.#sortComponent, this.container, RenderPosition.BEFOREEND);
   };
 
+  #renderLoadingSection = () => {
+    render(this.#loadingComponent, this.container, RenderPosition.BEFOREEND);
+  };
+
   #renderTripEventsSection = () => {
+    if(this.#isLoading){
+      this.#renderLoadingSection();
+      return;
+    }
+
     const points = this.points;
 
     if(points.length === 0){
@@ -121,6 +136,7 @@ export default class TripEventsPresenter{
 
     remove(this.#sortComponent);
     remove(this.#emptyListMessageComponent);
+    remove(this.#loadingComponent);
   };
 
   #handleViewAction = (actionType, updateType, update) => {
@@ -158,6 +174,15 @@ export default class TripEventsPresenter{
         this.#destroyNewPoint();
         this.#clearTripEventsSection();
         this.#renderTripEventsSection();
+        break;
+      case UpdateType.INIT:
+        if(this.#pointsModel.points === null || this.#offersModel.offers === null || this.#destinationsModel.destinations === null){
+          return;
+        }
+        remove(this.#loadingComponent);
+        this.#isLoading = false;
+        this.#renderTripEventsSection();
+        this.#newEventButtonModel.isPressed = false;
         break;
     }
   };

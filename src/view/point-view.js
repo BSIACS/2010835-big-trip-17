@@ -29,7 +29,7 @@ const createPointsOffersTemplate = (offersIDs, availableOffers) => {
 const createPointTemplate = (point, availableOffers) => {
   const {basePrice, dateFrom, dateTo, destination, isFavorite, offers, type} = point;
 
-  const favoriteBtnActiveClassName = isFavorite === 'true' ? 'event__favorite-btn--active' : '';
+  const favoriteBtnActiveClassName = isFavorite ? 'event__favorite-btn--active' : '';
 
   const typeAvailableOffers = availableOffers.find((element) => element.type === type ).offers;
 
