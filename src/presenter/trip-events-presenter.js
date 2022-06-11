@@ -176,8 +176,6 @@ export default class TripEventsPresenter{
         this.#renderTripEventsSection();
         break;
       case UpdateType.INIT:
-        //Событие инициализации модели
-        console.log('Событие инициализации модели (UpdateType = INIT)');
         if(this.#pointsModel.points === null || this.#offersModel.offers === null || this.#destinationsModel.destinations === null){
           return;
         }

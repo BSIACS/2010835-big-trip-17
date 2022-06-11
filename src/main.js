@@ -29,8 +29,6 @@ const addNewPointButtonPresenter = new AddNewPointButtonPresenter (tripMainEleme
 
 tripEventsPresenter.init();
 filterPresenter.init();
-//addNewPointButtonPresenter.init();
-//pointsModel.init();
 
 destinationsModel.init()
   .then(() => {
@@ -43,8 +41,4 @@ destinationsModel.init()
     addNewPointButtonPresenter.init();
   });
 
-// const p1 = destinationsModel.init();
-// const p2 = offersModel.init();
-
-// Promise.all([p1, p2]).then(pointsModel.init());
 

@@ -21,6 +21,10 @@ export default class PointsApiService extends ApiService {
       .then(ApiService.parseResponse);
   }
 
+  constructor(endPoint, authorization){
+    super(endPoint, authorization);
+  }
+
   updatePoint = async (point) => {
     const response = await this._load({
       url: `points/${point.id}`,

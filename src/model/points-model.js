@@ -28,7 +28,10 @@ export default class PointsModel extends Observable{
     this._notify(UpdateType.INIT);
   };
 
-  updatePoint = (updateType, update) => {
+  updatePoint = async (updateType, update) => {
+    update.basePrice = Number(update.basePrice);
+    update = await this.#pointsApiService.updatePoint(this.#adaptToServer(update));
+
     const index = this.#points.findIndex((point) => point.id === update.id);
 
     if (index === -1) {
@@ -37,11 +40,11 @@ export default class PointsModel extends Observable{
 
     this.#points = [
       ...this.#points.slice(0, index),
-      update,
+      this.#adaptToClient(update),
       ...this.#points.slice(index + 1),
     ];
 
-    this._notify(updateType, update);
+    this._notify(updateType, this.#adaptToClient(update));
   };
 
   addPoint = (updateType, update) => {
@@ -70,18 +73,34 @@ export default class PointsModel extends Observable{
   };
 
   #adaptToClient = (point) => {
-    const adaptedTask = {...point,
+    const adaptedPoint = {...point,
       basePrice: point.base_price,
       dateFrom: point.date_from,
       dateTo: point.date_to,
       isFavorite: point.is_favorite,
     };
 
-    delete adaptedTask['base_price'];
-    delete adaptedTask['date_from'];
-    delete adaptedTask['date_to'];
-    delete adaptedTask['is_favorite'];
+    delete adaptedPoint['base_price'];
+    delete adaptedPoint['date_from'];
+    delete adaptedPoint['date_to'];
+    delete adaptedPoint['is_favorite'];
 
-    return adaptedTask;
+    return adaptedPoint;
+  };
+
+  #adaptToServer = (point) => {
+    const adaptedPoint = {...point,
+      'base_price': point.basePrice,
+      'date_from': point.dateFrom,
+      'date_to': point.dateTo,
+      'is_favorite': point.isFavorite,
+    };
+
+    delete adaptedPoint['basePrice'];
+    delete adaptedPoint['dateFrom'];
+    delete adaptedPoint['dateTo'];
+    delete adaptedPoint['isFavorite'];
+
+    return adaptedPoint;
   };
 }
