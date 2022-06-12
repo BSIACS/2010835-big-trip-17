@@ -1,6 +1,8 @@
 import AbstractStatefulView from '../framework/view/abstract-stateful-view.js';
 import { generateDestinations } from '../mock/point.js';
 import { humanizeDateFormat } from '../utils.js';
+import flatpickr from 'flatpickr';
+import 'flatpickr/dist/flatpickr.min.css';
 
 const EVENT_TIME_FORMAT = 'YY/MM/DD HH:mm';
 
@@ -177,6 +179,8 @@ export default class EditPointView extends AbstractStatefulView{
   #types = null;
   #isAddView = null;
   #availableDestinations = null;
+  #dateFromPicker = null;
+  #dateToPicker = null;
 
   constructor(point, availableOffers, destinations, isAddView = false){
     super();
@@ -186,6 +190,7 @@ export default class EditPointView extends AbstractStatefulView{
     this.#availableDestinations = destinations;
     this._state = this.parsePointToState(point);
     this.setInnerHandlers();
+    this.#setDatepickers();
   }
 
   get template(){
@@ -237,6 +242,58 @@ export default class EditPointView extends AbstractStatefulView{
       this._callback.deleteButtonClick = callback;
     }
     this.element.querySelector('.event__reset-btn').addEventListener('click', this.#deleteButtonClickHandler);
+  };
+
+  #dateFromCloseHandler = ([userDate]) => {
+    this.updateElement({
+      dateFrom: userDate,
+    });
+  };
+
+  #dateToCloseHandler = ([userDate]) => {
+    this.updateElement({
+      dateTo: userDate,
+    });
+  };
+
+  removeElement = () => {
+    super.removeElement();
+
+    if(this.#dateFromPicker){
+      this.#dateFromPicker.destroy();
+      this.#dateFromPicker = null;
+    }
+
+    if(this.#dateToPicker){
+      this.#dateToPicker.destroy();
+      this.#dateToPicker = null;
+    }
+  };
+
+  #setDatepickers = () => {
+    if(this._state.dateFrom){
+      this.#dateFromPicker = flatpickr(
+        this.element.querySelector('#event-start-time-1'),
+        {
+          dateFormat: 'y/m/d H:i',
+          defaultDate: this._state.dateFrom,
+          enableTime: true,
+          onClose: this.#dateFromCloseHandler,
+        }
+      );
+    }
+    if(this._state.dateTo){
+      this.#dateToPicker = flatpickr(
+        this.element.querySelector('#event-end-time-1'),
+        {
+          dateFormat: 'y/m/d H:i',
+          defaultDate: this._state.dateTo,
+          minDate:  this._state.dateFrom,
+          enableTime: true,
+          onClose: this.#dateToCloseHandler,
+        }
+      );
+    }
   };
 
   setInnerHandlers = () => {
@@ -333,5 +390,6 @@ export default class EditPointView extends AbstractStatefulView{
     }
     this.setFormSubmitHandler();
     this.setDeleteButtonClickHandler();
+    this.#setDatepickers();
   };
 }
