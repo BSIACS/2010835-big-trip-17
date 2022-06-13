@@ -11,8 +11,7 @@ const BLANK_POINT = {
   dateFrom: '2022-05-04T05:20:00.000Z',
   dateTo: '2022-05-05T17:10:00.000Z',
   destination: generateDestinations()[0],
-  id: 12987,
-  isFavorite: 'false',
+  isFavorite: false,
   offers: [],
   type: 'check-in',
 };
@@ -203,7 +202,6 @@ export default class EditPointView extends AbstractStatefulView{
 
     for (let i = 0; i < this.#availableDestinations.length; i++) {
       const element = this.#availableDestinations[i];
-      //if (point.destination.name === element.name && point.destination.description === element.description){
       if (point.destination.name === element.name){
         destinationId = i;
         break;
@@ -217,7 +215,10 @@ export default class EditPointView extends AbstractStatefulView{
     return pointData;
   };
 
-  parseStateToPoint = () => ({...this._state, destination: this.#availableDestinations[this._state.destination]});
+  parseStateToPoint = () => ({...this._state,
+    basePrice: Number(this._state.basePrice),
+    destination: this.#availableDestinations[this._state.destination]
+  });
 
   reset = (point) => {
     this.updateElement(this.parsePointToState(point));
