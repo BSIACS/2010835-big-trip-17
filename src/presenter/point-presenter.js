@@ -22,7 +22,6 @@ export default class PointPresenter{
   #pointsContainer = null;
 
   #changeMode = null;
-  #submit = null;
   #changeData = null;
 
   constructor(pointsContainer, availableOffers, availableDestinations, changeData, changeMode){
@@ -59,11 +58,42 @@ export default class PointPresenter{
     }
 
     if(this.#pointsContainer.contains(prevEditPointComponent.element)){
-      replace(this.#editPointComponent, prevEditPointComponent);
+      replace(this.#pointComponent, prevEditPointComponent);
+      this.#mode = Mode.DEFAULT;
     }
 
-    remove(prevPointComponent);
     remove(prevEditPointComponent);
+    remove(prevPointComponent);
+
+  };
+
+  setSaving = () => {
+    if(this.#mode === Mode.EDITING){
+      this.#editPointComponent.updateElement({ isSaving: true, isDisabled: true });
+    }
+  };
+
+  setDeleting = () => {
+    if(this.#mode === Mode.EDITING){
+      this.#editPointComponent.updateElement({ isDeleting : true, isDisabled: true });
+    }
+  };
+
+  setAborting = () => {
+    if (this.#mode === Mode.DEFAULT) {
+      this.#editPointComponent.shake();
+      return;
+    }
+
+    const resetFormState = () => {
+      this.#editPointComponent.updateElement({
+        isDisabled: false,
+        isSaving: false,
+        isDeleting: false,
+      });
+    };
+
+    this.#editPointComponent.shake(resetFormState);
   };
 
   resetView = () => {
@@ -120,7 +150,6 @@ export default class PointPresenter{
       isUpdateTypeMinor ? UpdateType.MINOR : UpdateType.PATCH,
       point
     );
-    this.#switchToPointView();
   };
 
   #handleDeleteButtonClick = (point) => {
@@ -135,7 +164,7 @@ export default class PointPresenter{
     this.#changeData(
       UserAction.UPDATE_POINT,
       UpdateType.PATCH,
-      {...this.#point, isFavorite: !this.#point.isFavorite}
+      {...this.#point, isFavorite: this.#point.isFavorite === 'true' ? 'false' : 'true'}
     );
   };
 }

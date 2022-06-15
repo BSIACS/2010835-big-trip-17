@@ -28,6 +28,22 @@ export default class NewPointPresenter{
     this.#editPointComponent.setDeleteButtonClickHandler(this.#handleDeleteButtonClick);
   };
 
+  setSaving = () => {
+    this.#editPointComponent.updateElement({ isSaving: true, isDisabled: true });
+  };
+
+  setAborting = () => {
+    const resetFormState = () => {
+      this.#editPointComponent.updateElement({
+        isDisabled: false,
+        isSaving: false,
+        isDeleting: false,
+      });
+    };
+
+    this.#editPointComponent.shake(resetFormState);
+  };
+
   setEscKeyDownHandler = (callback) => {
     this.#callback.escKeyDown = callback;
   };
