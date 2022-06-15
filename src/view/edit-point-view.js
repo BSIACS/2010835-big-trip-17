@@ -1,20 +1,11 @@
 import AbstractStatefulView from '../framework/view/abstract-stateful-view.js';
-import { generateDestinations } from '../mock/point.js';
+//import { generateDestinations } from '../mock/point.js';
 import { humanizeDateFormat } from '../utils.js';
 import flatpickr from 'flatpickr';
 import 'flatpickr/dist/flatpickr.min.css';
+import dayjs from 'dayjs';
 
 const EVENT_TIME_FORMAT = 'YY/MM/DD HH:mm';
-
-const BLANK_POINT = {
-  basePrice: 0,
-  dateFrom: '2022-05-04T05:20:00.000Z',
-  dateTo: '2022-05-05T17:10:00.000Z',
-  destination: generateDestinations()[0],
-  isFavorite: false,
-  offers: [],
-  type: 'check-in',
-};
 
 const getEventTypeItemTemplate = (eventType, checkedType) => {
   const isChecked = eventType === checkedType ? 'checked' : '';
@@ -186,19 +177,30 @@ export default class EditPointView extends AbstractStatefulView{
 
   constructor(point, availableOffers, destinations, isAddView = false){
     super();
-    point = isAddView === true ? BLANK_POINT : point;
+
     this.#availableOffers = availableOffers;
     this.#isAddView = isAddView;
     this.#availableDestinations = destinations;
+    this.#types = this.#availableOffers.map((element) => element.type);
+    point = isAddView === true ? this.#getDefaultPoint() : point;
     this._state = this.parsePointToState(point);
     this.setInnerHandlers();
     this.#setDatepickers();
   }
 
   get template(){
-    this.#types = this.#availableOffers.map((element) => element.type);
     return editPointTemplate(this._state, this.#availableOffers, this.#types, this.#availableDestinations, this.#isAddView);
   }
+
+  #getDefaultPoint = () => ({
+    basePrice: 0,
+    dateFrom: dayjs().toISOString(),
+    dateTo: dayjs().add(1, 'hour').toISOString(),
+    destination: this.#availableDestinations[0],
+    isFavorite: false,
+    offers: [],
+    type: this.#types[0],
+  });
 
   parsePointToState = (point) => {
     let destinationId = null;
