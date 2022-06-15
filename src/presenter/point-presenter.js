@@ -82,6 +82,7 @@ export default class PointPresenter{
   setAborting = () => {
     if (this.#mode === Mode.DEFAULT) {
       this.#editPointComponent.shake();
+      this.#pointComponent.shake();
       return;
     }
 
@@ -164,7 +165,7 @@ export default class PointPresenter{
     this.#changeData(
       UserAction.UPDATE_POINT,
       UpdateType.PATCH,
-      {...this.#point, isFavorite: this.#point.isFavorite === 'true' ? 'false' : 'true'}
+      {...this.#point, isFavorite: !this.#point.isFavorite}
     );
   };
 }
