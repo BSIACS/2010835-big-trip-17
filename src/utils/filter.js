@@ -1,18 +1,26 @@
 import dayjs from 'dayjs';
 import { FilterType } from '../constants';
 
-const filterFuture = (points) => (points.filter(
-  (point) =>
-    dayjs(point.dateFrom).date() >= dayjs().date() ||
-    (dayjs(point.dateFrom).date() < dayjs().date() && dayjs(point.dateTo).date() > dayjs().date())
-)
+
+const filterFuture = (points) => points.filter(
+  (point) => {
+    const dateFrom = dayjs(point.dateFrom);
+    const dateTo = dayjs(point.dateTo);
+    const dateNow = dayjs();
+
+    return  dateFrom.isAfter(dateNow, 'day') || dateFrom.isSame(dateNow, 'day') ||
+    (dateFrom.isBefore(dateNow, 'day') && dateTo.isAfter(dateNow, 'day'));
+  }
 );
 
-const filterPast = (points) => (points.filter(
-  (point) =>
-    dayjs(point.dateTo).date() < dayjs().date() ||
-    (dayjs(point.dateFrom).date() < dayjs().date() && dayjs(point.dateTo).date() > dayjs().date())
-)
+const filterPast = (points) => points.filter(
+  (point) => {
+    const dateFrom = dayjs(point.dateFrom);
+    const dateTo = dayjs(point.dateTo);
+    const dateNow = dayjs();
+
+    return dateTo.isBefore(dateNow, 'day') || (dateFrom.isBefore(dateNow, 'day') && dateTo.isAfter(dateNow, 'day'));
+  }
 );
 
 
