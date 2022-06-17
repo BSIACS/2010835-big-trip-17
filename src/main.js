@@ -7,6 +7,7 @@ import FilterPresenter from './presenter/filter-presenter.js';
 import AddNewPointButtonPresenter from './presenter/add-new-point-button-presenter.js';
 import NewEventButtonModel from './model/new-event-button-model.js';
 import PointsApiService from './api/points-api-service.js';
+import TripInfoPresenter from './presenter/trip-info-presenter.js';
 
 const AUTHORIZATION = 'Basic er856jdzbdz';
 const END_POINT = 'https://17.ecmascript.pages.academy/big-trip/';
@@ -25,17 +26,18 @@ const newEventButtonModel = new NewEventButtonModel();
 const tripEventsPresenter = new TripEventsPresenter(tripEventsElement, pointsModel, filterModel, newEventButtonModel, offersModel, destinationsModel);
 const filterPresenter = new FilterPresenter(tripControlsFiltersElement, filterModel, pointsModel);
 const addNewPointButtonPresenter = new AddNewPointButtonPresenter (tripMainElement, newEventButtonModel);
+new TripInfoPresenter(tripMainElement, pointsModel, offersModel);
 
 
 tripEventsPresenter.init();
 filterPresenter.init();
 
 destinationsModel.init()
-  .then(() => {
-    offersModel.init();
+  .then(async () => {
+    await offersModel.init();
   })
-  .then(() => {
-    pointsModel.init();
+  .then(async () => {
+    await pointsModel.init();
   })
   .then(() => {
     addNewPointButtonPresenter.init();

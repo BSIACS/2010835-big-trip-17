@@ -48,6 +48,7 @@ export default class TripEventsPresenter{
     this.#newEventButtonModel = newEventButtonModel;
     this.#newEventButtonModel.addObserver(this.#handleAddNewButtonEvent);
     this.#isLoading = true;
+    render(this.#tripEventsListComponent, this.container, RenderPosition.BEFOREEND);
   }
 
   get points(){
@@ -103,7 +104,7 @@ export default class TripEventsPresenter{
   #renderSort = () => {
     this.#sortComponent = new SortView(this.#currentSortKey);
     this.#sortComponent.setSortButtonClickHandler(this.#handleSortButtonClick);
-    render(this.#sortComponent, this.container, RenderPosition.BEFOREEND);
+    render(this.#sortComponent, this.container, RenderPosition.AFTERBEGIN);
   };
 
   #renderLoadingSection = () => {
@@ -118,14 +119,13 @@ export default class TripEventsPresenter{
 
     const points = this.points;
 
-    if(points.length === 0){
+    if(points.length === 0 && !this.#newEventButtonModel.isPressed){
       this.#renderNoPoints(NoPointsMessage[this.#filterModel.filter]);
 
       return;
     }
 
     this.#renderSort();
-    render(this.#tripEventsListComponent, this.container, RenderPosition.BEFOREEND);
     this.#renderPoints(points);
   };
 

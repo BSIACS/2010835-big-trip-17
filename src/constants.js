@@ -31,4 +31,19 @@ const NoPointsMessage = {
   PAST: 'There are no past events now',
 };
 
-export {SortKeys, UserAction, UpdateType, FilterType, NoPointsMessage};
+const MonthsAcronyms = [
+  'JAN',
+  'FEB',
+  'MAR',
+  'APR',
+  'MAY',
+  'JUN',
+  'JUL',
+  'AUG',
+  'SEP',
+  'OCT',
+  'NOV',
+  'DEC'
+];
+
+export {SortKeys, UserAction, UpdateType, FilterType, NoPointsMessage, MonthsAcronyms};
