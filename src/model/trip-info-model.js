@@ -50,7 +50,7 @@ export default class TripInfoModel extends Observable {
 
     let middleDestinationName = '';
     if(this.#sortedPoints.length > 3){
-      middleDestinationName = '&mdash; . . . .';
+      middleDestinationName = '&mdash; &nbsp;&nbsp;.&nbsp;&nbsp;.&nbsp;&nbsp;.&nbsp;&nbsp;';
     }
     else if(this.#sortedPoints.length === 3){
       middleDestinationName = `&mdash; ${ this.#sortedPoints[1].destination.name }`;

@@ -147,7 +147,7 @@ const editPointTemplate = (data, availableOffers, types, availableDestinations, 
               <span class="visually-hidden">Price</span>
               &euro;
             </label>
-            <input class="event__input  event__input--price" id="event-price-1" type="number" name="event-price" value="${basePrice}" ${isDisabled}>
+            <input class="event__input  event__input--price" id="event-price-1" name="event-price" value="${basePrice}" ${isDisabled}>
           </div>
 
           <button class="event__save-btn  btn  btn--blue" type="submit" ${isDisabled}>${saveBtnTextContent}</button>
@@ -322,6 +322,7 @@ export default class EditPointView extends AbstractStatefulView{
     }
 
     this.element.querySelector('.event__input--price').addEventListener('change', this.#basePriceChangeHandler);
+    this.element.querySelector('.event__input--price').addEventListener('input', this.#basePriceInputHandler);
 
     const elements = this.element.querySelectorAll('.event__type-item');
     elements.forEach((element) => {
@@ -390,6 +391,20 @@ export default class EditPointView extends AbstractStatefulView{
     this._setState({
       basePrice: evt.target.value
     });
+  };
+
+  #basePriceInputHandler = (evt) => {
+    let arr = Array.from(evt.target.value);
+
+    arr = arr.map((element) => Number(element));
+
+    arr = arr.filter((element) => !isNaN(element));
+
+    if(arr[0] === 0){
+      arr.shift();
+    }
+
+    evt.target.value = arr.join('');
   };
 
   #eventTypeItemClickHandler = (evt) => {

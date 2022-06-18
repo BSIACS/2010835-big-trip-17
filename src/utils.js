@@ -1,29 +1,4 @@
-
 import dayjs from 'dayjs';
-
-const getRandomInt = (min = 0, max = 100) => {
-  if(min >= max){
-    throw new Error('Аргумент функции "min" не может быть больше или равен аргументу функции "max".');
-  }
-
-  return Math.floor(Math.random() * (max - min + 1)) + min;
-};
-
-const getRandomArrayElement = (elements) => elements[getRandomInt(0, elements.length - 1)];
-
-const getRandomUniqueIntegersArray = (min, max, count) => {
-  const values = [];
-
-  for(let i = 0; i < count; i++){
-    const randomValue = getRandomInt(min, max);
-
-    if(!values.includes(randomValue)){
-      values.push(randomValue);
-    }
-  }
-
-  return values;
-};
 
 const humanizeDateFormat = (dueDate, format) => dayjs(dueDate).format(format);
 
@@ -44,4 +19,4 @@ const getTimeDuration = (dateFrom, dateTo) => {
 const isEscapeKey = (evt) => evt.key === 'Escape' || evt.key === 'Esc';
 
 
-export {getRandomArrayElement, getRandomInt, humanizeDateFormat,  getTimeDuration, getRandomUniqueIntegersArray, isEscapeKey};
+export {humanizeDateFormat,  getTimeDuration, isEscapeKey};

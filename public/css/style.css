@@ -831,6 +831,16 @@ main {
   .event__photo:not(:last-child) {
     margin-right: 5px; }
 
+.error-4xx__msg{
+  margin: auto;
+  vertical-align: middle;
+  font-weight: 500;
+  font-size: 44px;
+  line-height: 60px;
+  text-align: center;
+  opacity: 0.8
+}
+
 /* Chrome, Safari, Edge, Opera */
 input::-webkit-outer-spin-button,
 input::-webkit-inner-spin-button {

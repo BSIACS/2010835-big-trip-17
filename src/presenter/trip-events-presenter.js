@@ -151,6 +151,17 @@ export default class TripEventsPresenter{
           this.#pointsPresenters.get(update.id).setAborting();
         }
         break;
+      case UserAction.UPDATE_IS_FAVORITE:
+        this.#isLoading = true;
+        this.#clearTripEventsSection();
+        this.#renderTripEventsSection();
+        try{
+          await this.#pointsModel.updatePoint(updateType, update);
+        }
+        catch(error){
+          this.#pointsPresenters.get(update.id).setAborting();
+        }
+        break;
       case UserAction.ADD_POINT:
         this.#newPointPresenter.setSaving();
         try{
@@ -181,6 +192,7 @@ export default class TripEventsPresenter{
         this.#pointsPresenters.get(data.id).init(data);
         break;
       case UpdateType.MINOR:
+        this.#isLoading = false;
         this.#destroyNewPoint();
         this.#clearTripEventsSection();
         this.#renderTripEventsSection();

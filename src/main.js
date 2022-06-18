@@ -28,7 +28,6 @@ const filterPresenter = new FilterPresenter(tripControlsFiltersElement, filterMo
 const addNewPointButtonPresenter = new AddNewPointButtonPresenter (tripMainElement, newEventButtonModel);
 new TripInfoPresenter(tripMainElement, pointsModel, offersModel);
 
-
 tripEventsPresenter.init();
 filterPresenter.init();
 
@@ -41,6 +40,9 @@ destinationsModel.init()
   })
   .then(() => {
     addNewPointButtonPresenter.init();
+  })
+  .catch((error) => {
+    document.querySelector('body').innerHTML = `<p class="error-4xx__msg">${error.message}</p>`;
   });
 
 
